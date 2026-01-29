@@ -38,10 +38,9 @@ This is a paragraph in Typst.
 
 ## Workflows
 
-- **Creating a new Typst project**: Use the "Minimal document example" above as a starting point. Look at the tutorial to understand the basics ([docs/tutorial/writing-in-typst.md](docs/tutorial/writing-in-typst.md)). Then, create the `.typ` file(s).
-- **Editing existing content**: Locate the target text, apply changes, and ensure syntax validity using the reference documentation ([docs/reference/](docs/reference/)).
+- **Creating a new Typst project**: Use the "Minimal document example" above as a starting point. Skim the tutorial for the basics ([docs/tutorial/writing-in-typst.md](docs/tutorial/writing-in-typst.md)), then create the `.typ` file(s).
+- **Editing existing content**: Locate the target text and apply changes; confirm syntax against the reference when needed ([docs/reference/](docs/reference/)).
 - **Formatting & Styling**: Consult the styling guide ([docs/reference/styling.md](docs/reference/styling.md)) for `set rule`, `show rule`, and custom themes.
-- **Compiling**: Compile the project using Typst's CLI and fix potential errors.
 
 ## Documentation
 
@@ -61,21 +60,36 @@ This is a paragraph in Typst.
 
 Critical distinctions:
 
-- **Arrays**: `(item1, item2)` (parentheses). See [docs/reference/data-structures.md](docs/reference/data-structures.md).
+- **Arrays**: `(item1, item2)` (parentheses). See [docs/reference/foundations/array.md](docs/reference/foundations/array.md).
 - **Dictionaries**: `(key: value, key2: value2)` (parentheses with colons). See [docs/reference/foundations/dictionary.md](docs/reference/foundations/dictionary.md).
 - **Content blocks**: `[markup content]` (square brackets). See [docs/reference/foundations/content.md](docs/reference/foundations/content.md).
 - **NO tuples**: Typst only has arrays.
 
+### Hash usage (markup vs code):
+
+- Use `#` to start a code expression inside markup or content blocks; it disambiguates code from text. This is required for content-producing function calls and field access in markup: `#figure[...]`, `#image("file.png")`, `text(...)[#numbering(...)]`.
+- Do not use `#` inside code contexts (argument lists, code blocks, show-rule bodies). Example: `#figure(image("file.png"))` (no `#` before `image`).
+- Reference: [docs/reference/scripting.md](docs/reference/scripting.md), [docs/tutorial/writing-in-typst.md](docs/tutorial/writing-in-typst.md)
+
+```typst
+// Incorrect (missing # inside content block)
+text(...)[(numbering(...))]
+
+// Correct
+text(...)[(#numbering(...))]
+```
+
 ## Common mistakes to avoid
 
-- ❌ Calling things "tuples" (Typst only has arrays).
-- ❌ Using `[]` for arrays (use `()` instead).
-- ❌ Accessing array elements with `arr[0]` (use `arr.at(0)`).
-- ❌ Forgetting `#` prefix for code in markup context.
-- ❌ Mixing up content blocks `[]` with code blocks `{}`.
-- ❌ Forgetting to include the namespace when accessing imported variables/functions (e.g., use `color.hsl` instead of just `hsl`).
-- ❌ Using LaTeX syntax (do **NOT** use `\begin{...}`, `\section`, or other LaTeX commands).
-- ❌ Hallucinating environments (e.g., `tabular` does not exist; use `table`).
+- Calling things "tuples" (Typst only has arrays).
+- Using `[]` for arrays (use `()` instead).
+- Accessing array elements with `arr[0]` (use `arr.at(0)`).
+- Omitting `#` in markup/content blocks (e.g., `text(...)[numbering(...)]` should be `text(...)[#numbering(...)]`).
+- Using `#` inside code contexts (e.g., `figure(#image("x.png"))` in an argument list).
+- Mixing up content blocks `[]` with code blocks `{}`.
+- Forgetting to include the namespace when accessing imported variables/functions (e.g., use `color.hsl` instead of just `hsl`).
+- Using LaTeX syntax (do **NOT** use `\begin{...}`, `\section`, or other LaTeX commands).
+- Hallucinating environments (e.g., `tabular` does not exist; use `table`).
 
 ## Advanced features
 
@@ -109,6 +123,6 @@ If import fails with "package not found":
 Common fixes:
 
 - **"expected content, found ..."**: You're using code where markup is expected - wrap in `#{ }` or use proper syntax.
-- **"expected expression, found ..."**: Missing `#` prefix in markup context.
+- **"expected expression, found ..."**: Missing `#` (or `#(...)`) in markup/content blocks.
 - **"unknown variable"**: Check spelling, ensure imports are correct.
 - **Array/dictionary errors**: Review syntax - use `()` for both, dictionaries need `key: value`, singleton arrays are `(elem,)`.
